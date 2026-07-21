@@ -1795,10 +1795,17 @@ async def generate_images(
                     status_code=generation_result.error.code if generation_result.error else 400,
                     content=generation_result.model_dump(),
                 )
-            flat_images, _, _, _ = generation_result
+            flat_images, stage_durations, peak_memory_mb, _ = generation_result
             image_data = [ImageData(b64_json=encode_image_base64(img), revised_prompt=None) for img in flat_images]
 
-            return ImageGenerationResponse(created=int(time.time()), data=image_data)
+            return ImageGenerationResponse(
+                created=int(time.time()),
+                data=image_data,
+                metrics={
+                    "stage_durations": stage_durations or {},
+                    "peak_memory_mb": float(peak_memory_mb or 0.0),
+                },
+            )
 
         # Build params - pass through user values directly
         prompt: OmniTextPrompt = {"prompt": request.prompt, "modalities": ["image"]}
