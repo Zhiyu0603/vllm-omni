@@ -1802,8 +1802,8 @@ async def generate_images(
                 created=int(time.time()),
                 data=image_data,
                 metrics={
-                    "stage_durations": stage_durations or {},
-                    "peak_memory_mb": float(peak_memory_mb or 0.0),
+                    "stage_durations": stage_durations or None,
+                    "peak_memory_mb": float(peak_memory_mb or None),
                 },
             )
 
