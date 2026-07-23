@@ -1871,7 +1871,7 @@ async def generate_images(
 
         logger.debug(f"Generating {request.n} image(s) {size_str}")
 
-        # Generate images using AsyncOmni (multi-stage mode)
+        # Generate images using AsyncOmni.
         result = await _generate_with_async_omni(
             engine_client=engine_client,
             gen_params=gen_params,
@@ -1901,10 +1901,16 @@ async def generate_images(
             for img in images
         ]
 
+        stage_durations = getattr(result, "stage_durations", None)
+        peak_memory_mb = getattr(result, "peak_memory_mb", None)
         response_kwargs = {
             "created": int(time.time()),
             "data": image_data,
             "output_format": output_format,
+            "metrics": {
+                "stage_durations": stage_durations or None,
+                "peak_memory_mb": float(peak_memory_mb) if peak_memory_mb else None,
+            },
         }
         if request.size:
             response_kwargs["size"] = size_str
